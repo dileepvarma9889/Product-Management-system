@@ -1,0 +1,6 @@
+com\example\MyProject\Controller\ProductController.class
+com\example\MyProject\Repository\ProductRepository.class
+com\example\MyProject\Service\ProductService.class
+com\example\MyProject\MyProjectApplication.class
+com\example\MyProject\Model\Product.class
+com\example\MyProject\Service\ProductServiceImpl.class
