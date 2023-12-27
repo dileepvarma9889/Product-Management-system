@@ -1,0 +1,1067 @@
+DEVICE SPECIFICATIONS:-
+
+Processor	11th Gen Intel(R) Core(TM) i5-11300H @ 3.10GHz   3.11 GHz
+Installed RAM	16.0 GB (15.8 GB usable)
+Edition	        Windows 11 Home Single Language
+Version	        23H2
+OS build	22631.2861
+System type	64-bit operating system, x64-based processor
+
+
+REQUIREMENTS:-
+
+>> Java 17
+>> Spring Tool Suite(STS)
+>> React.js
+>> Visual Studio Code
+>> MySql Workbench 8.0 CE
+
+
+****CREATING A BACKEND SPRING STARTER PROJECT****
+
+-> Open "spring initializr" in Browser.
+-> Create a new spring project with below Specifications:
+>> Project name- MyProject
+>> Package name- com.example.MyProject
+>> Project type- Maven
+>> Packing- JAR
+>> Language: Java
+>> Java version: 17
+>> Spring Boot Version: 3.2.0
+
+
+DEPENDENCIES:-
+>> Spring web
+>> Spring dev tools
+>> Spring Data JPA
+>> MySQL Driver
+
+-> Now GENERATE the project zip file to the File Manager.
+-> And Extract the file to create a MyProject folder and Open in the Visual Studio Code.
+
+MODEL CLASS:-
+
+-> Creating a model folder in the src\main\java\com\example\MyProject.
+-> Now Create a new file in Model folder with the extension "Product.java".
+
+
+Code in Product Class:
+
+>>>
+     package com.example.MyProject.Model;
+     import jakarta.persistence.Entity;
+     import jakarta.persistence.GeneratedValue;
+     import jakarta.persistence.GenerationType;
+     import jakarta.persistence.Id;
+     @Entity
+     public class Product {
+     @Id
+     @GeneratedValue(strategy = GenerationType.IDENTITY)
+     private Integer id;
+     private String productName;
+     private String description;
+     private Double price;
+     private String status;
+     public Integer getId() {
+        return id;
+     }
+     public void setId(Integer id) {
+         this.id = id;
+     }
+     public String getProductName() {
+         return productName;
+     }
+     public void setProductName(String productName) {
+         this.productName = productName;
+     }
+     public String getDescription() {
+         return description;
+     }
+     public void setDescription(String description) {
+         this.description = description;
+     }
+     public Double getPrice() {
+         return price;
+     }
+     public void setPrice(Double price) {
+         this.price = price;
+     }
+     public String getStatus() {
+         return status;
+     }
+     public void setStatus(String status) {
+         this.status = status;
+     }
+    }
+<<<
+
+Explanation:
+Product Class-
+The Product class represents a product entity in the system. It is used to store information about different products, such as their name, description, price, and status.
+
+Fields:
+
+        ->id
+        ->productName
+        ->description
+        ->price
+        ->status
+
+Methods:
+     Getters:-
+       Description: Getter methods are used for retrieving the product fields.
+        ->getId()
+        ->getProductName()
+        ->getDescription()
+        ->getPrice()
+        ->getStatus()
+      Setters:-Setter methods are used for setting the product fields.
+        Descriptiion: 
+         ->setId(Integer id)
+         ->setProductName()
+         ->setDescription(String description)
+         ->setPrice(Double price)
+         ->setStatus(String status)
+         
+Entity Annotation:
+@Entity
+ -> Indicates that the class is a JPA entity, it will be mapped to a relational database table.
+
+ID Generation Annotation:
+@Id
+ -> Marks the field as the primary key of the entity.
+
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+ ->Specifies that the ID should be generated automatically by the database using an identity column.
+
+
+CONTROLLER CLASS:-
+
+-> Creating a Controller folder in the src\main\java\com\example\MyProject.
+-> Now Create a new file in Controller folder with the extension "ProductController.java".
+
+Code in ProductController Class:
+
+>>>
+    package com.example.MyProject.Controller;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.http.HttpStatus;
+    import org.springframework.http.ResponseEntity;
+    import org.springframework.web.bind.annotation.CrossOrigin;
+    import org.springframework.web.bind.annotation.GetMapping;
+    import org.springframework.web.bind.annotation.PathVariable;
+    import org.springframework.web.bind.annotation.PostMapping;
+    import org.springframework.web.bind.annotation.PutMapping;
+    import org.springframework.web.bind.annotation.RequestBody;
+    import org.springframework.web.bind.annotation.RestController;
+    import com.example.MyProject.Model.Product;
+    import com.example.MyProject.Service.ProductService;
+    @CrossOrigin(origins = "http://localhost:3009")
+    @RestController
+    public class ProductController {
+       @Autowired
+       private ProductService productService;
+       @PostMapping("/saveProduct")
+       public ResponseEntity<?>saveProduct(@RequestBody Product product){
+           return new ResponseEntity<>(productService.saveProduct(product),HttpStatus.CREATED);
+       }
+       @GetMapping("/")
+       public ResponseEntity<?>getAllProduct(){
+          return new ResponseEntity<>(productService.getAllProduct(),HttpStatus.OK);
+       }
+       @GetMapping("/{id}")
+       public ResponseEntity<?>getProductById(@PathVariable Integer id){
+           return new ResponseEntity<>(productService.getProductById(id),HttpStatus.OK);
+       }
+       @GetMapping("/deleteProduct/{id}")
+       public ResponseEntity<?> deleteProduct(@PathVariable Integer id) {
+           return new ResponseEntity<>(productService.deleteProduct(id), HttpStatus.OK);
+       }
+       @PutMapping("/editProduct")
+       public ResponseEntity<?> editProduct(@RequestBody Product product, @PathVariable Integer id) {
+           return new ResponseEntity<>(productService.editProduct(product, id), HttpStatus.CREATED);
+       }
+     }
+<<<
+
+ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+-> when running this code it will not updating the values by showing the error.......
+
+*******{
+           "timestamp": "2023-12-26T04:50:57.171+00:00",
+           "status": 404,
+           "error": "Not Found",
+           "message": "No static resource editProduct/24.",
+           "path": "/editProduct/24"
+*******}
+ -> To rectify this error , i used this website: https://chat.openai.com/c/bc923bca-7520-46c7-a59e-4ecd6d734a00
+ -> And the error is
+            -> Path: 'The URL path that resulted in the error - "/editProduct/24."'
+ ->I didn't pass any {id} value in the edit in @PutMapping
+      @PutMapping("/editProduct")
+       public ResponseEntity<?> editProduct(@RequestBody Product product, @PathVariable Integer id) {
+           return new ResponseEntity<>(productService.editProduct(product, id), HttpStatus.CREATED);
+       } 
+
+Modified Code :-
+
+>>>
+     package com.example.MyProject.Controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.MyProject.Model.Product;
+import com.example.MyProject.Service.ProductService;
+@CrossOrigin(origins = "http://localhost:3000")
+@RestController
+public class ProductController {
+    
+    @Autowired
+    private ProductService productService;
+
+    @PostMapping("/saveProduct")
+    public ResponseEntity<?>saveProduct(@RequestBody Product product){
+        return new ResponseEntity<>(productService.saveProduct(product),HttpStatus.CREATED);
+
+    }
+    @GetMapping("/")
+    public ResponseEntity<?>getAllProduct(){
+         return new ResponseEntity<>(productService.getAllProduct(),HttpStatus.OK);
+    }
+     @GetMapping("/{id}")
+    public ResponseEntity<?>getProductById(@PathVariable Integer id){
+         return new ResponseEntity<>(productService.getProductById(id),HttpStatus.OK);
+    }
+    @GetMapping("/deleteProduct/{id}")
+	public ResponseEntity<?> deleteProduct(@PathVariable Integer id) {
+		return new ResponseEntity<>(productService.deleteProduct(id), HttpStatus.OK);
+	}
+    @PutMapping("/editProduct/{id}")
+	public ResponseEntity<?> editProduct(@RequestBody Product product, @PathVariable Integer id) {
+		return new ResponseEntity<>(productService.editProduct(product, id), HttpStatus.CREATED);
+	}
+   }
+<<<
+
+
+Explanation:
+   ProductController Class:
+       -The ProductController class is responsible for handling HTTP requests related to product operations. 
+       -It interacts with the ProductService to perform CRUD (Create, Read, Update, Delete) operations on products.
+
+   Annotations:
+       @RestController
+          -Indicates that this class is a controller that handles RESTful web service requests.
+       @CrossOrigin(origins = "http://localhost:3009")
+          -Enables Cross-Origin Resource Sharing (CORS) for the specified origin, allowing requests from http://localhost:3009.
+   Autowired Field:
+       private ProductService productService
+       Type: ProductService
+          -Autowired field for injecting an instance of the ProductService into the controller.
+   Endpoints:
+       ->POST /saveProduct
+          - Saves a new product. 
+       ->GET /
+          - Retrieves all products. 
+       ->GET /{id}
+          - Retrieves a product by its ID.
+       -> GET /deleteProduct/{id}
+          - Deletes a product by its ID.
+       -> PUT /editProduct/{id}
+          - Edits an existing product with the specified ID.
+          
+
+REPOSITORY INTERFACE:-
+
+-> Creating a Repository folder in the src\main\java\com\example\MyProject.
+-> Now Create a new file in Repository folder with the extension "ProductRepository.java".
+
+Code in ProductRepository Interface:
+
+>>>
+    package com.example.MyProject.Repository;
+
+    import org.springframework.data.jpa.repository.JpaRepository;
+
+    import com.example.MyProject.Model.Product;
+
+    public interface ProductRepository extends JpaRepository<Product,Integer> {
+
+    }
+<<<
+
+Explanation:
+-> The ProductRepository interface is a repository interface for managing instances of the Product entity. 
+-> It extends the JpaRepository interface, which is part of the Spring Data JPA framework.
+-> This interface provides a set of methods for performing common database operations on the Product entity.
+
+"@Repository"
+-> This annotation is not explicitly used in the provided code, but it's often added to the implementation class that Spring Data JPA generates during runtime.
+
+Inherited Methods:
+
+-> The JpaRepository interface provides a set of methods for basic CRUD operations and querying.
+-> Some of these methods include findAll(), findById(), save(), deleteById(), and more.
+
+SERVICE INTERFACE:-
+
+-> Creating a Service folder in the src\main\java\com\example\MyProject.
+-> Now Create a new file in Service folder with the extension "ProductService.java".
+
+Code in ProductService Interface:
+
+>>>
+    package com.example.MyProject.Service;
+
+    import java.util.List;
+
+    import com.example.MyProject.Model.Product;
+
+        public interface ProductService {
+        public Product saveProduct(Product product);
+        public List<Product> getAllProduct();
+        public Product getProductById(Integer id);
+        public String deleteProduct(Integer id);
+        public Product editProduct(Product product,Integer id);
+<<<
+
+Explanation:
+-> The ProductService interface defines a set of methods for managing Product entities.
+-> This interface is typically implemented by a service class, and it acts as a contract specifying the operations that the service should provide.
+
+Method Signatures:
+    - saveProduct: Save a new Product entity.
+    - getAllProduct: Retrieve a list of all Product entities.
+    - getProductById: Retrieve a Product entity by its identifier.
+    - deleteProduct: Delete a Product entity by its identifier.
+    - editProduct: Update an existing Product entity.
+
+-> Now Create a new file in Service folder with the extension "ProductService.java".
+
+Code in ProductServiceImpl Interface:
+>>>
+     package com.example.MyProject.Service;
+     import java.util.List;
+     import org.springframework.beans.factory.annotation.Autowired;
+     import org.springframework.stereotype.Service;
+     import com.example.MyProject.Model.Product;
+     import com.example.MyProject.Repository.ProductRepository;
+
+@Service
+public class ProductServiceImpl implements ProductService {
+    @Autowired
+    private ProductRepository productrepo;
+
+    @Override
+    public Product saveProduct(Product product) {
+       return productrepo.save(product);
+    }
+
+    @Override
+    public List<Product> getAllProduct() {
+        return productrepo.findAll();
+    }
+
+    @Override
+    public Product getProductById(Integer id) {
+        return productrepo.findById(id).get();
+    }
+
+    @Override
+    public String deleteProduct(Integer id) {
+        Product product = productrepo.findById(id).get();
+        if(product!=null){
+            productrepo.delete(product);
+            return "Product Delete Sucessfully";
+        }
+        return "Something erong on server";
+        
+    }
+
+    @Override
+    public Product editProduct(Product product, Integer id) {
+        Product oldProduct= productrepo.findById(id).get();
+
+        oldProduct.setProductName(product.getProductName());
+        oldProduct.setDescription(product.getDescription());
+        oldProduct.setPrice(product.getPrice());
+        oldProduct.setStatus(product.getStatus());
+        return productrepo.save(oldProduct);
+
+       
+      }
+    
+    
+   }
+<<<
+
+Explanation:
+-> The @Service annotation is a specialization of the component annotation.
+-> It indicates that the class is a service, and it's meant to be used as a business service layer.
+
+-> The @Autowired annotation is used for automatic dependency injection.
+-> In this case, an instance of ProductRepository is injected into the ProductServiceImpl class.
+-> This allows your service to interact with the underlying data store (in this case, a JPA repository) without manually creating an instance.
+
+saveProduct()
+    - This method is used to save a new Product entity to the data store.
+    - The save method of the ProductRepository is called, and the saved entity is returned.
+getAllProduct()
+    - This method retrieves a list of all Product entities from the data store using the findAll method of ProductRepository.
+getProductById()
+    - This method retrieves a Product entity by its identifier (id) using the findById method of ProductRepository. 
+deleteProduct()
+    - This method deletes a Product entity by its identifier (id). 
+    - It first checks if the product exists (not null) and then deletes it using the delete method of ProductRepository.
+editProduct()
+    - This method updates an existing Product entity. 
+    - It retrieves the existing product, updates its fields with the values from the provided Product object, and then saves the updated product using the save method of ProductRepository.
+   
+APPLICATION.PROPERTIES:-
+>>> 
+    spring.datasource.url=jdbc:mysql://localhost:3306/product
+    spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+    spring.datasource.username=root
+    spring.datasource.password=admin@123
+    spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+    spring.jpa.hibernate.ddl-auto=update
+<<<
+
+Explanation:
+-> spring.datasource.url:
+      - This property specifies the URL of the MySQL database. In this case, it's set to jdbc:mysql://localhost:3306/product, where:
+-> spring.datasource.driver-class-name:
+      - This property specifies the fully qualified name of the JDBC driver class for MySQL. 
+-> spring.datasource.username:
+      - This property specifies the username to be used when connecting to the MySQL database.
+-> spring.datasource.password:
+      - This property specifies the password to be used when connecting to the MySQL database. 
+-> spring.jpa.properties.hibernate.dialect:
+      - This property specifies the Hibernate dialect to use. 
+-> spring.jpa.hibernate.ddl-auto:
+      - This property specifies the action that Hibernate should take on startup. 
+
+
+
+****CREATING A FRONTEND REACTJS PROJECT****
+
+REQUIRMENTS:-
+  -> Node.js
+  -> Axios
+  -> React-Router-dom
+
+Creating the empty project:
+ - First created a empty folder in Desktop folder.
+ - Open Visual Studio Code app.
+ - Open the created folder and create a new project using the command "npx create-react-app product".
+ - This command will create a new project with name product .
+
+COMPONANT MODULE:-
+
+-> Create a Component folder in the src.
+-> Now Create a new file in Component folder with the extension Navbar.js.
+
+Code in Navbar.js:
+>>> 
+
+import React from 'react'
+import { Link } from 'react-router-dom'
+
+const Navbar = () => {
+  return (
+    <>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Product Management System</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <Link to="/" class="nav-link active" aria-current="page" href="#">Home</Link>
+        </li>
+        <li class="nav-item">
+          <Link  to="addProduct" class="nav-link active" aria-current="page" href="#">Add Product</Link>
+        </li>
+        
+        </ul>
+    </div>
+  </div>
+</nav>
+      
+    </>
+  )
+}
+
+export default Navbar
+
+<<<
+
+Explanation:
+
+<nav> element:
+   - This represents the navigation bar.
+   - It uses the Bootstrap classes navbar, navbar-expand-lg for responsiveness, and navbar-dark bg-success for styling.
+<a> element inside the navbar-brand:
+   - This is the brand/logo on the left side of the navigation bar.
+   - It has the text "Product Management System" and a placeholder href="#". You might want to replace this with the link to your home page.
+<button> element:
+   - This is the hamburger button for toggling the navigation menu on small screens.
+   - It uses Bootstrap's classes for the navbar toggler.
+<div> with the collapse class:
+   - This contains the actual navigation links and will be collapsed on small screens.
+   - It uses the collapse class and the navbar-collapse class for styling.
+<ul> element:
+   - This is an unordered list that contains the navigation items.
+   - It uses Bootstrap classes for styling.
+Navigation items (<li> elements):
+   - Each <li> represents a navigation item.
+   - Inside each <li>, there's a <Link> from React Router, which is used for navigation.
+   - The to prop in <Link> specifies the route the link should navigate to.
+
+--> Now Create a new file in Component folder with the extension AddProduct.jsx.
+
+Code in AddProduct.jsx File:
+
+>>>
+import React, { useState } from 'react'
+import productService from '../service/productService';
+
+const AddProduct = () => {
+    const[Product,setProduct]=useState({
+        productName:"",
+        description:"",
+        price:"",
+        status:"",
+    })
+    const [msg,setMsg]=useState("");
+    const handleChange=(e)=>{
+        const value=e.target.value;
+        setProduct({...Product,[e.target.name]:value});
+    };
+    const ProductRegister=(e)=>{
+        e.preventDefault();
+        productService.saveProduct(Product).then((res)=>{
+            console.log("Product Added Successfully");
+            setMsg("Product Added Successfully");
+            setProduct({
+                
+                    productName:"",
+                    description:"",
+                    price:"",
+                    status:"",
+                
+            })
+
+        }).catch((error)=>{
+            console.log(error);
+        })
+    }
+  return (
+    <div className="container mt-3">
+        <div className="row">
+            <div className='col-md-6 offset-md-3'>
+                <div className="card">
+                    <div className="card-header fs-3 text-center">
+                        Add Product
+                    </div>
+                    {
+                        msg &&
+                        <p className='fs-4 text-center text-success'>{msg}</p>
+                    }
+                    <div className="card-body">
+                        <form onSubmit={(e)=>ProductRegister(e)}>
+                            <div className="mb-3">
+                                <label>Enter Product Name</label>
+                                <input type='text' name="productName" className='form-control'
+                                onChange={(e)=>handleChange(e)}
+                                value={Product.productName}/>
+                            </div>
+                            <div className="mb-3">
+                                <label>Enter Description</label>
+                                <input type='text' name="description" className='form-control'
+                                onChange={(e)=>handleChange(e)}
+                                value={Product.description}/>
+                            </div>
+                            <div className="mb-3">
+                                <label>Enter Price</label>
+                                <input type='text' name="price" className='form-control'
+                                onChange={(e)=>handleChange(e)}
+                                value={Product.price}/>
+                            </div>
+                            <div className="mb-3">
+                                <label>Enter Status</label>
+                                <input type='text' name="status" className='form-control'
+                                onChange={(e)=>handleChange(e)}
+                                value={Product.status}/>
+                            </div>
+                            <button className='btn btn-primary col-md-12'>Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  )
+}
+
+export default AddProduct
+<<<
+
+Explanation:
+
+-> The AddProduct component is responsible for allowing users to input information about a new product and submit the details for addition.
+
+State:-
+    Product: An object that holds the details of the new product. It includes the following properties:
+        - productName: 
+        - description: 
+        - price: 
+        - status: 
+msg: A state variable to store success messages after adding a product.
+
+Functions:
+handleChange(e): 
+    - A function that handles input changes in the form fields and updates the corresponding property in the Product state.
+ProductRegister(e):
+    - A function triggered when the form is submitted. It sends a request to the backend to save the new product using the productService.
+Rendering:
+ The component renders a Bootstrap-styled form with the following input fields:
+     - It accepts text input for this product:
+        - Product Name: 
+        - Description: 
+        - Price: 
+        - Status:
+If a success message (msg) is present, it is displayed at the center of the form.
+
+*** Now Create a new file in Component folder with the extension AddProduct.jsx.
+
+Code in EditProduct.jsx File:
+
+>>>
+import React, { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom';
+import productService from '../service/productService';
+
+const EditProduct = () => {
+    const[Product,setProduct]=useState({
+        id:"",
+        productName:"",
+        description:"",
+        price:"",
+        status:"",
+    })
+    const navigate=useNavigate();
+    const {id}=useParams();
+    console.log(id);
+    const [msg,setMsg]=useState("");
+    useEffect(()=>{
+        productService.getProductById(id).then((res)=>{
+            setProduct(res.data);
+        }).catch((error)=>{
+            console.log(error);
+        })
+    },[])
+    const handleChange=(e)=>{
+        const value=e.target.value;
+        setProduct({...Product,[e.target.name]:value});
+    };
+    const ProductUpdate=(e)=>{
+        e.preventDefault();
+        productService.saveProduct(Product).then((res)=>{
+            navigate("/");
+            console.log("Product Updated Successfully");
+            setMsg("Product Added Successfully");
+            setProduct({
+                
+                    productName:"",
+                    description:"",
+                    price:"",
+                    status:"",
+                
+            })
+
+        }).catch((error)=>{
+            console.log(error);
+        })
+    }
+  return (
+    <div className="container mt-3">
+        <div className="row">
+            <div className='col-md-6 offset-md-3'>
+                <div className="card">
+                    <div className="card-header fs-3 text-center">
+                        Edit Product
+                    </div>
+                    {
+                        msg &&
+                        <p className='fs-4 text-center text-success'>{msg}</p>
+                    }
+                    <div className="card-body">
+                        <form onSubmit={(e)=>ProductUpdate(e)}>
+                            <div className="mb-3">
+                                <label>Enter Product Name</label>
+                                <input type='text' name="productName" className='form-control'
+                                onChange={(e)=>handleChange(e)}
+                                value={Product.productName}/>
+                            </div>
+                            <div className="mb-3">
+                                <label>Enter Description</label>
+                                <input type='text' name="description" className='form-control'
+                                onChange={(e)=>handleChange(e)}
+                                value={Product.description}/>
+                            </div>
+                            <div className="mb-3">
+                                <label>Enter Price</label>
+                                <input type='text' name="price" className='form-control'
+                                onChange={(e)=>handleChange(e)}
+                                value={Product.price}/>
+                            </div>
+                            <div className="mb-3">
+                                <label>Enter Status</label>
+                                <input type='text' name="status" className='form-control'
+                                onChange={(e)=>handleChange(e)}
+                                value={Product.status}/>
+                            </div>
+                            <button className='btn btn-primary col-md-12'>Update</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  )
+}
+
+export default EditProduct
+
+<<<
+
+Explanation:
+
+-> The EditProduct component allows users to edit the details of an existing product.
+-> It retrieves the current details of the product using the getProductById function from the productService, and allows users to update and save the changes.
+
+Hooks:-
+   - useNavigate:
+       > A hook from React Router to navigate to different pages.
+   - useParams:
+       > A hook from React Router to access the parameters from the current route, used to get the id of the product being edited.
+   - useEffect:
+       > A hook used to fetch the current details of the product when the component mounts.
+
+Functions:-
+
+   - handleChange(e):
+      > A function that handles input changes in the form fields and updates the corresponding property in the Product state.
+   - ProductUpdate(e):
+      > A function triggered when the form is submitted.
+
+*** Now Create a new file in Component folder with the extension Home.jsx.
+
+Code in Home.jsx File:
+>>>
+
+import React, { useEffect, useState } from 'react';
+import productService from '../service/productService';
+import { Link } from 'react-router-dom';
+
+const Home = () => {
+    const [productList, setProductList] = useState([]);
+    const [msg,setMsg]=useState("");
+    useEffect(() => {
+     init();   
+    }, []);
+    const init=()=>
+    {
+        productService.getAllProduct()
+            .then((res) => {
+                setProductList(res.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+    }
+    const deleteProduct=(id)=>{
+        productService.deleteProduct(id).then((res)=>{
+            setMsg("Delete Successfully");
+            init();
+        }).catch((error)=>{
+            console.log(error);
+        })
+    }
+
+    return (
+        <>
+            <div className="container mt-3">
+                <div className="row">
+                    <div className="col-md-12">
+                        <div className="card">
+                            <div className="card-header fs-3 text-center">
+                                All Product List
+                                {
+                                  msg &&
+                                  <p className='fs-4 text-center text-success'>{msg}</p>
+                                }
+                            </div>
+                            <div className="card-body">
+                                <table className="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">SI No</th>
+                                            <th scope="col">Product Name</th>
+                                            <th scope="col">description</th>
+                                            <th scope="col">Price</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {productList.map((p, num) => (
+                                            <tr key={p.id}>
+                                                <td>{num + 1}</td>
+                                                <td>{p.productName}</td>
+                                                <td>{p.description}</td>
+                                                <td>{p.price}</td>
+                                                <td>{p.status}</td>
+                                                <td>
+                                                    <Link to={'editProduct/'+p.id} className="btn btn-sm btn-primary">
+                                                        Edit
+                                                    </Link>
+                                                    <button onClick={()=>deleteProduct(p.id)}className="btn btn-sm btn-danger ms-1">
+                                                        Delete
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+};
+
+export default Home;
+
+<<<
+
+Explanation:
+-> The Home component displays a list of all products in a tabular format.
+-> It fetches the product data from the backend using the productService.getAllProduct function and provides functionalities such as viewing, editing, and deleting products.
+State:-
+      -> productList:
+           - An array that holds the list of products retrieved from the backend.
+msg: A state variable to store success messages, such as successful product deletion.
+
+Hooks:
+   -> useEffect:
+     - A hook used to initialize the component by fetching the product data when it mounts.
+Functions:
+    -> init(): 
+          - A function that fetches the list of products from the backend using productService.getAllProduct and updates the productList state.
+    -> deleteProduct(id): 
+          - A function that deletes a product based on its id by calling productService.deleteProduct. 
+          - It updates the msg state upon successful deletion and then calls init to refresh the product list.
+
+ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+{
+  AxiosErrorcode: "ERR_NETWORK"
+  config: {transitional: {…}, adapter: Array(2), transformRequest: Array(1), transformResponse: Array(1), timeout: 0, …}
+  message: "Network Error"
+  name: "AxiosError"
+  request: XMLHttpRequest {onreadystatechange: null, readyState: 4, timeout: 0, withCredentials: false, upload: XMLHttpRequestUpload, …}
+  stack: "AxiosError: Network Error\n    at XMLHttpRequest.handleError (http://localhost:3000/main.00023253d85115605309.hot-update.js:38780:14)"[[Prototype]]
+}
+
+-> To solve this error , I reserched in Chatgpt and i get the solution for the error.
+    -Update Axios Version:
+             Make sure you are using a recent version of Axios. Outdated versions might have bugs or compatibility issues.
+-> To rectify this error , i need to install the latest version of Axios.
+-> For this i used the command ->>> "npm install axios@latest".
+-> Then the latest version of "axios": "^1.6.2" installed.
+
+*** Create a service folder in the src.
+-> Now Create a new file in service folder with the extension productService.js.
+
+Code in productService.js:
+
+>>>
+import axios from "axios";
+
+const API_URL="http://localhost:8080";
+class ProductService{
+    saveProduct(Product){
+        return axios.post(API_URL+"/saveProduct",Product);
+    }
+    getAllProduct(){
+        return axios.get(API_URL+"/");
+    }
+    getProductById(id){
+        return axios.get(API_URL+"/"+id);
+
+    }
+    deleteProduct(id){
+        return axios.get(API_URL+"/deleteProduct/"+id);
+
+    }
+    editProduct(product){
+        return axios.post(API_URL+"/editProduct/"+product.id,product);
+    }
+    
+
+
+}
+export default new ProductService;
+
+<<<
+
+Explanation:
+
+-> The ProductService module provides an abstraction for interacting with the backend API related to product management.
+-> It utilizes the Axios library for making HTTP requests.
+Properties:-
+API_URL: The base URL of the backend API.
+
+Methods:
+-> saveProduct(Product)
+     - Sends a POST request to save a new product.
+-> getAllProduct()
+     - Sends a GET request to fetch all products.
+-> getProductById(id)
+     - Sends a GET request to fetch a specific product by its id.
+-> deleteProduct(id)
+     - Sends a GET request to delete a product by its id.
+-> editProduct(product)
+     - Sends a POST request to edit/update an existing product.
+
+Code in App.js:
+
+>>>
+
+import { Route, Routes } from 'react-router-dom';
+import './App.css';
+import Navbar from './Component/Navbar';
+import Home from './Component/Home';
+import AddProduct from './Component/AddProduct';
+import EditProduct from './Component/EditProduct';
+
+function App() {
+  return (
+    <>
+   <Navbar/>
+   <Routes>
+    <Route path='/' element={<Home/>}></Route>
+    <Route path='/addProduct' element={<AddProduct/>}></Route>
+    <Route path='/editProduct/:id' element={<EditProduct/>}></Route>
+   </Routes>
+   </>
+  );
+}
+
+export default App;
+
+<<<
+
+Explanation:
+
+-> The App component serves as the main entry point for your React application. 
+-> It defines the overall structure of the application and uses the React Router library for navigation.
+Component Structure:-
+     -> Navbar Component:
+            - Displays the navigation bar at the top of the application.
+     -> Routes Component: 
+            - Defines the different routes and their corresponding components.
+-> Home Route:
+     - Renders the Home component when the URL path is '/'.
+-> Add Product Route:
+     - Renders the AddProduct component when the URL path is '/addProduct'.
+-> Edit Product Route:
+     - Renders the EditProduct component when the URL path matches '/editProduct/:id', where :id is a dynamic parameter representing the product ID.
+
+Code in index.js:
+>>>
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+import { BrowserRouter } from 'react-router-dom';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
+
+<<<
+
+Explanation:
+
+-> Root Element:
+      - The application's root element is created using ReactDOM.createRoot. 
+      - This method returns a root object for Concurrent Mode rendering.
+-> BrowserRouter:
+      - The BrowserRouter component is utilized for enabling client-side routing in the application.
+      - It wraps the App component to provide routing capabilities.
+-> App Component:
+      - The App component is the main entry point for the application.
+      - It defines the structure of the entire application and may include routing information.
+
+Conclusion:
+
+-- The Product Management System application serves as an effective tool for managing Products data, offering a seamless experience for users to interact with the system.
+-- The combination of Spring Boot and MySQL on the backend, along with React.js on the frontend.
+-- And creates a robust and scalable architecture, allowing for further enhancements and features to meet evolving business needs.
+-- The application demonstrates the successful integration of various technologies to deliver a reliable and efficient system for product data management,
+   catering to the modern requirements of businesses in maintaining personnel records.
+
+#################################################################### THANKYOU ##################################################################################  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
